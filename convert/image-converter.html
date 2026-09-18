@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Converter — Convert JPG, PNG, WEBP & More Free | Convertly</title>
+<meta name="description" content="Convert images between JPG, PNG and WEBP for free, instantly, right in your browser. No uploads, no sign-up.">
+<link rel="canonical" href="https://convertly.example.com/convert/image-converter.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Image Converter",
+  "description": "Convert images between JPG, PNG and WEBP for free, instantly, right in your browser. No uploads, no sign-up.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any (runs in browser)",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "url": "https://convertly.example.com/convert/image-converter.html"
+}
+</script>
+</head>
+<body>
+<div class="accent-bar"></div>
+
+<header class="site-header">
+  <div class="nav-row">
+    <a href="../" class="brand"><span class="mark"></span>Convertly</a>
+    <nav class="main-nav">
+      <div class="nav-item">
+        <button class="nav-trigger" aria-controls="mega-convert">Convert <span class="chev"></span></button>
+        <div class="mega" id="mega-convert">
+          <div class="mega-group-label"><span class="ic"></span>Image</div>
+          <a href="../convert/image-converter.html">Image Converter</a>
+          <a href="../convert/webp-to-png.html">WEBP to PNG</a>
+          <a href="../convert/jfif-to-png.html">JFIF to PNG</a>
+          <a href="../convert/png-to-svg.html">PNG to SVG</a>
+          <a href="../convert/heic-to-jpg.html">HEIC to JPG</a>
+          <a href="../convert/heic-to-png.html">HEIC to PNG</a>
+          <a href="../convert/webp-to-jpg.html">WEBP to JPG</a>
+          <a href="../convert/svg-converter.html">SVG Converter</a>
+        </div>
+      </div>
+      <div class="nav-item">
+        <button class="nav-trigger" aria-controls="mega-compress">Compress <span class="chev"></span></button>
+        <div class="mega" id="mega-compress">
+          <div class="mega-group-label"><span class="ic"></span>Image</div>
+          <a href="../compress/image-compressor.html">Image Compressor</a>
+          <a href="../compress/jpeg-compressor.html">JPEG Compressor</a>
+          <a href="../compress/png-compressor.html">PNG Compressor</a>
+        </div>
+      </div>
+      <div class="nav-item">
+        <button class="nav-trigger" aria-controls="mega-tools">Tools <span class="chev"></span></button>
+        <div class="mega" id="mega-tools">
+          <a href="../tools.html">All tools</a>
+          <a href="../tools.html#image">Image tools</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="tool-page-head">
+  <div class="wrap">
+    <div class="crumb"><a href="../">Home</a> / <a href="../tools.html">Convert</a> / Image Converter</div>
+    <h1>Image Converter</h1>
+    <p>Upload any common image and convert it to JPG, PNG or WEBP.</p>
+  </div>
+</section>
+
+<section class="tool-workbench">
+  <div class="wrap">
+    <div class="dropzone" id="dz" tabindex="0" role="button" aria-label="Upload an image">
+      <div class="dz-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      </div>
+      <h3>Drop an image here</h3>
+      <p class="dz-sub">or click to browse — JPG, PNG, WEBP, GIF, BMP</p>
+      <button class="btn" type="button">Choose file</button>
+      <input type="file" id="file-input" accept="image/*">
+    </div>
+
+    <div class="options-row" id="options" style="display:none;">
+      <label for="target-format">Convert to</label>
+      <select id="target-format">
+        <option value="image/png|png">PNG</option>
+        <option value="image/jpeg|jpg">JPG</option>
+        <option value="image/webp|webp">WEBP</option>
+      </select>
+      <button class="btn" id="run-btn" type="button">Convert</button>
+    </div>
+
+    <div class="result-box" id="result">
+      <div class="result-row">
+        <div>
+          <h3 id="result-name">—</h3>
+          <div class="result-stats" id="result-stats"></div>
+        </div>
+        <a class="btn" id="download-btn" href="#" download>Download</a>
+      </div>
+    </div>
+
+    <p class="note">Your file is converted locally in your browser. It is never uploaded anywhere.</p>
+  </div>
+</section>
+
+<section class="wrap about-copy">
+  <h2>About this converter</h2>
+  <p>Upload any common image and convert it to JPG, PNG or WEBP. Pick any target format above — the conversion runs instantly using your browser's own image engine, so nothing is ever sent to a server.</p>
+</section>
+
+<section class="wrap faq">
+  <h2>Frequently asked questions</h2>
+  <div class="faq-item"><h3>Is there a file size limit?</h3><p>No hard limit is enforced by the tool itself, since conversion happens on your own device — the practical limit is your browser's available memory.</p></div>
+  <div class="faq-item"><h3>Does this reduce image quality?</h3><p>Converting to PNG is lossless. Converting to JPG or WEBP uses a high default quality setting, so the difference is generally not visible.</p></div>
+  <div class="faq-item"><h3>Are my files uploaded anywhere?</h3><p>No. The conversion runs entirely in your browser using the Canvas API, and nothing is sent to a server.</p></div>
+  <div class="faq-item"><h3>Can I convert multiple images at once?</h3><p>This page handles one image at a time so you can review the result before downloading. Batch support may be added later.</p></div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <a href="../" class="brand"><span class="mark"></span>Convertly</a>
+      <p style="margin-top:12px;font-size:14px;max-width:260px;">Free browser-based file conversion and compression. No uploads, no watermarks.</p>
+    </div>
+    <div>
+      <h4>Convert</h4>
+      <a href="../convert/image-converter.html">Image Converter</a>
+      <a href="../convert/webp-to-png.html">WEBP to PNG</a>
+      <a href="../convert/heic-to-jpg.html">HEIC to JPG</a>
+      <a href="../convert/svg-converter.html">SVG Converter</a>
+    </div>
+    <div>
+      <h4>Compress</h4>
+      <a href="../compress/image-compressor.html">Image Compressor</a>
+      <a href="../compress/jpeg-compressor.html">JPEG Compressor</a>
+      <a href="../compress/png-compressor.html">PNG Compressor</a>
+    </div>
+    <div>
+      <h4>Site</h4>
+      <a href="../tools.html">All tools</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Convertly. Files are processed locally in your browser and are never uploaded.</div>
+</footer>
+<script src="../js/main.js"></script>
+<script src="../js/tools.js"></script>
+
+<script>
+  const dz = document.getElementById("dz");
+  const input = document.getElementById("file-input");
+  const options = document.getElementById("options");
+  const result = document.getElementById("result");
+  let currentFile = null;
+
+  setupDropzone(dz, input, (files) => {
+    currentFile = files[0];
+    options.style.display = "flex";
+    result.classList.remove("show");
+  });
+
+  document.getElementById("run-btn").addEventListener("click", async () => {
+    if (!currentFile) return;
+    const [mime, ext] = document.getElementById("target-format").value.split("|");
+    try {
+      const blob = await convertImageFile(currentFile, mime);
+      const outName = swapExtension(currentFile.name, ext);
+      document.getElementById("result-name").textContent = outName;
+      document.getElementById("result-stats").innerHTML =
+        `${formatBytes(currentFile.size)} → ${formatBytes(blob.size)}`;
+      const dl = document.getElementById("download-btn");
+      dl.href = URL.createObjectURL(blob);
+      dl.download = outName;
+      result.classList.add("show");
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+</script>
+</body>
+</html>
