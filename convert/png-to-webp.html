@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JPEG Compressor — Reduce JPG File Size Free | Convertly</title>
-<meta name="description" content="Compress JPEG images for free with an adjustable quality slider, right in your browser.">
-<link rel="canonical" href="https://convertly.example.com/compress/jpeg-compressor.html">
+<title>PNG to WEBP Converter — Free & Instant | Convertly</title>
+<meta name="description" content="Convert PNG images to WEBP for free, right in your browser, while keeping transparency.">
+<link rel="canonical" href="https://convertly.example.com/convert/png-to-webp.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,12 +14,12 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "JPEG Compressor",
-  "description": "Compress JPEG images for free with an adjustable quality slider, right in your browser.",
+  "name": "PNG to WEBP Converter",
+  "description": "Convert PNG images to WEBP for free, right in your browser, while keeping transparency.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Any (runs in browser)",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-  "url": "https://convertly.example.com/compress/jpeg-compressor.html"
+  "url": "https://convertly.example.com/convert/png-to-webp.html"
 }
 </script>
 </head>
@@ -71,31 +71,26 @@
 
 <section class="tool-page-head">
   <div class="wrap">
-    <div class="crumb"><a href="../">Home</a> / <a href="../tools.html">Compress</a> / JPEG Compressor</div>
-    <h1>JPEG Compressor</h1>
-    <p>Shrink a JPEG's file size for faster websites, smaller email attachments, and easier sharing.</p>
+    <div class="crumb"><a href="../">Home</a> / <a href="../tools.html">Convert</a> / PNG to WEBP Converter</div>
+    <h1>PNG to WEBP Converter</h1>
+    <p>Turn a PNG into a smaller WEBP file without losing transparency.</p>
   </div>
 </section>
 
 <section class="tool-workbench">
   <div class="wrap">
-    <div class="dropzone" id="dz" tabindex="0" role="button" aria-label="Upload an image to compress">
+    <div class="dropzone" id="dz" tabindex="0" role="button" aria-label="Upload a PNG file">
       <div class="dz-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       </div>
-      <h3>Drop an image here</h3>
+      <h3>Drop your PNG file here</h3>
       <p class="dz-sub">or click to browse</p>
       <button class="btn" type="button">Choose file</button>
-      <input type="file" id="file-input" accept="image/jpeg">
+      <input type="file" id="file-input" accept="image/png">
     </div>
 
-    <div class="options-row" id="options" style="display:none;">
-      <label for="quality">Quality</label>
-      <div class="range-wrap">
-        <input type="range" id="quality" min="10" max="95" value="75">
-        <output id="quality-out">75%</output>
-      </div>
-      <button class="btn" id="run-btn" type="button">Compress</button>
+    <div class="convert-status" id="status" style="display:none;">
+      <span class="spinner on-light"></span> Converting…
     </div>
 
     <div class="result-box" id="result">
@@ -104,25 +99,25 @@
           <h3 id="result-name">—</h3>
           <div class="result-stats" id="result-stats"></div>
         </div>
-        <a class="btn" id="download-btn" href="#" download>Download</a>
+        <a class="btn" id="download-btn" href="#" download>Download WEBP</a>
       </div>
     </div>
 
-    <p class="note">Your file is compressed locally in your browser. It is never uploaded anywhere.</p>
+    <p class="note">Your file is converted locally in your browser. It is never uploaded anywhere.</p>
   </div>
 </section>
 
 <section class="wrap about-copy">
-  <h2>About this compressor</h2>
-  <p>Shrink a JPEG's file size for faster websites, smaller email attachments, and easier sharing. Drag the quality slider to trade off file size against visual quality, then compare the before/after size shown once it finishes.</p>
+  <h2>About this converter</h2>
+  <p>Turn a PNG into a smaller WEBP file without losing transparency. Because the conversion happens with your browser's built-in image engine, there's no queue, no file-size limit tied to a server, and no copy of your file kept anywhere once you close the tab.</p>
 </section>
 
 <section class="wrap faq">
   <h2>Frequently asked questions</h2>
-  <div class="faq-item"><h3>How much smaller will my file get?</h3><p>It depends on the image and quality chosen — typical savings range from 30-70% at a quality of 60-80%.</p></div>
-  <div class="faq-item"><h3>Will my photo look different?</h3><p>At moderate compression (60-85% quality) most people can't tell the difference from the original at normal viewing sizes.</p></div>
-  <div class="faq-item"><h3>Why compress a JPEG that's already compressed?</h3><p>JPEGs from cameras or screenshots are often saved at very high quality; re-encoding at a lower quality trims size further for web use.</p></div>
-  <div class="faq-item"><h3>Is there a limit to how many files I can compress?</h3><p>No — since it runs locally, use it as many times as you need.</p></div>
+  <div class="faq-item"><h3>Does WEBP keep my PNG's transparency?</h3><p>Yes — WEBP supports an alpha channel, so transparent areas are preserved just like in PNG.</p></div>
+  <div class="faq-item"><h3>How much smaller will the file be?</h3><p>Typically 25-50% smaller than the original PNG, depending on the image content.</p></div>
+  <div class="faq-item"><h3>Is WEBP lossless or lossy?</h3><p>This tool uses WEBP's high-quality lossy mode by default, which looks visually identical to the source PNG at a fraction of the size.</p></div>
+  <div class="faq-item"><h3>Where does the conversion happen?</h3><p>Entirely in your browser — nothing is uploaded to a server.</p></div>
 </section>
 
 <footer class="site-footer">
@@ -159,39 +154,19 @@
 <script>
   const dz = document.getElementById("dz");
   const input = document.getElementById("file-input");
-  const options = document.getElementById("options");
   const result = document.getElementById("result");
-  const qualitySlider = document.getElementById("quality");
-  const qualityOut = document.getElementById("quality-out");
-  let currentFile = null;
+  const status = document.getElementById("status");
 
-  qualitySlider.addEventListener("input", () => {
-    qualityOut.textContent = qualitySlider.value + "%";
-  });
-
-  setupDropzone(dz, input, (files) => {
-    currentFile = files[0];
-    options.style.display = "flex";
-    result.classList.remove("show");
-  });
-
-  const runBtn = document.getElementById("run-btn");
-  runBtn.addEventListener("click", async () => {
-    if (!currentFile) return;
-    const q = Number(qualitySlider.value) / 100;
-    const originalLabel = runBtn.textContent;
-    runBtn.disabled = true;
-    runBtn.innerHTML = '<span class="spinner"></span> Compressing…';
+  setupDropzone(dz, input, async (files) => {
+    const file = files[0];
     result.classList.remove("show", "in");
+    status.style.display = "flex";
     try {
-      const blob = await convertImageFile(currentFile, "image/jpeg", q);
-      const outName = swapExtension(currentFile.name, "jpg");
+      const blob = await convertImageFile(file, "image/webp", 0.9);
+      const outName = swapExtension(file.name, "webp");
       document.getElementById("result-name").textContent = outName;
-      const before = currentFile.size;
-      const after = blob.size;
-      const pct = before > 0 ? Math.max(0, Math.round((1 - after / before) * 100)) : 0;
       document.getElementById("result-stats").innerHTML =
-        `${formatBytes(before)} → ${formatBytes(after)} <span class="saved">(${pct}% smaller)</span>`;
+        `${formatBytes(file.size)} → ${formatBytes(blob.size)}`;
       const dl = document.getElementById("download-btn");
       dl.href = URL.createObjectURL(blob);
       dl.download = outName;
@@ -200,8 +175,7 @@
     } catch (err) {
       alert(err.message);
     } finally {
-      runBtn.disabled = false;
-      runBtn.textContent = originalLabel;
+      status.style.display = "none";
     }
   });
 </script>

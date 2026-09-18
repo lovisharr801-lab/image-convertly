@@ -87,6 +87,64 @@ function convertImageToSvgWrapper(file) {
   });
 }
 
+// Browsers have no native ICO encoder, so this builds a real multi-size
+// .ico file by hand: a small ICONDIR header followed by several PNG
+// images at standard favicon sizes, each with its own directory entry.
+// This "PNG-in-ICO" format has been supported by Windows and browsers
+// since Vista and is what every favicon generator actually produces.
+async function convertImageToIco(file, sizes = [16, 32, 48, 64]) {
+  const img = await new Promise((resolve, reject) => {
+    const im = new Image();
+    const url = URL.createObjectURL(file);
+    im.onload = () => { resolve(im); };
+    im.onerror = () => reject(new Error("This browser couldn't read that file."));
+    im.src = url;
+  });
+
+  const pngBuffers = [];
+  for (const size of sizes) {
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    // Contain-fit the source image within the square canvas, centered,
+    // so non-square source images don't get stretched.
+    const scale = Math.min(size / img.naturalWidth, size / img.naturalHeight);
+    const w = img.naturalWidth * scale;
+    const h = img.naturalHeight * scale;
+    ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    pngBuffers.push(new Uint8Array(await blob.arrayBuffer()));
+  }
+
+  const headerSize = 6 + 16 * sizes.length;
+  const totalSize = headerSize + pngBuffers.reduce((sum, b) => sum + b.length, 0);
+  const out = new Uint8Array(totalSize);
+  const view = new DataView(out.buffer);
+
+  view.setUint16(0, 0, true);   // reserved
+  view.setUint16(2, 1, true);   // type: 1 = icon
+  view.setUint16(4, sizes.length, true);
+
+  let offset = headerSize;
+  sizes.forEach((size, i) => {
+    const entryStart = 6 + i * 16;
+    const dim = size >= 256 ? 0 : size; // 0 means 256 in the ICO spec
+    out[entryStart] = dim;              // width
+    out[entryStart + 1] = dim;          // height
+    out[entryStart + 2] = 0;            // color palette count
+    out[entryStart + 3] = 0;            // reserved
+    view.setUint16(entryStart + 4, 1, true);   // color planes
+    view.setUint16(entryStart + 6, 32, true);  // bits per pixel
+    view.setUint32(entryStart + 8, pngBuffers[i].length, true);
+    view.setUint32(entryStart + 12, offset, true);
+    out.set(pngBuffers[i], offset);
+    offset += pngBuffers[i].length;
+  });
+
+  return new Blob([out], { type: "image/x-icon" });
+}
+
 // Wires drag-and-drop + click-to-browse behavior onto a dropzone element.
 function setupDropzone(dropzoneEl, inputEl, onFiles) {
   const openPicker = () => inputEl.click();

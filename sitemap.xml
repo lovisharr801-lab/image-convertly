@@ -4,12 +4,17 @@
   <url><loc>https://convertly.example.com/tools.html</loc></url>
   <url><loc>https://convertly.example.com/convert/image-converter.html</loc></url>
   <url><loc>https://convertly.example.com/convert/webp-to-png.html</loc></url>
+  <url><loc>https://convertly.example.com/convert/png-to-jpg.html</loc></url>
+  <url><loc>https://convertly.example.com/convert/jpg-to-webp.html</loc></url>
+  <url><loc>https://convertly.example.com/convert/png-to-webp.html</loc></url>
   <url><loc>https://convertly.example.com/convert/jfif-to-png.html</loc></url>
   <url><loc>https://convertly.example.com/convert/png-to-svg.html</loc></url>
+  <url><loc>https://convertly.example.com/convert/svg-to-png.html</loc></url>
   <url><loc>https://convertly.example.com/convert/heic-to-jpg.html</loc></url>
   <url><loc>https://convertly.example.com/convert/heic-to-png.html</loc></url>
   <url><loc>https://convertly.example.com/convert/webp-to-jpg.html</loc></url>
   <url><loc>https://convertly.example.com/convert/svg-converter.html</loc></url>
+  <url><loc>https://convertly.example.com/convert/png-to-ico.html</loc></url>
   <url><loc>https://convertly.example.com/compress/image-compressor.html</loc></url>
   <url><loc>https://convertly.example.com/compress/jpeg-compressor.html</loc></url>
   <url><loc>https://convertly.example.com/compress/png-compressor.html</loc></url>

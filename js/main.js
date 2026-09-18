@@ -29,4 +29,29 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeAll(null);
   });
+
+  // Category filter pills (used on /tools.html). No-op on pages that
+  // don't have this markup.
+  const pills = document.querySelectorAll(".pill[data-filter]");
+  const sections = document.querySelectorAll(".filter-section");
+  if (pills.length && sections.length) {
+    pills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        pills.forEach((p) => p.classList.remove("active"));
+        pill.classList.add("active");
+        const target = pill.getAttribute("data-filter");
+
+        sections.forEach((section) => {
+          const matches = target === "all" || section.dataset.category === target;
+          if (matches) {
+            section.hidden = false;
+            requestAnimationFrame(() => section.classList.remove("fading"));
+          } else {
+            section.classList.add("fading");
+            setTimeout(() => { section.hidden = true; }, 200);
+          }
+        });
+      });
+    });
+  }
 });

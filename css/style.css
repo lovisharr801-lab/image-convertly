@@ -8,10 +8,13 @@
   --blue: #2554F0;
   --blue-hover: #1B3FC9;
   --blue-tint: #EEF2FE;
+  --blue-tint-solid: #E4EBFF;
+  --green: #12805C;
+  --green-tint: #E7F6EF;
+  --good: #12805C;
   --surface: #F5F7FB;
   --border: #E3E7F0;
   --white: #FFFFFF;
-  --good: #12805C;
   --radius: 8px;
   --max: 1120px;
   --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -75,17 +78,29 @@ header.site-header{
   white-space:nowrap;
 }
 .brand .mark{
-  width:24px;height:24px;border-radius:6px;
+  width:26px;height:26px;border-radius:7px;
   background:var(--blue);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.brand .mark svg{width:15px;height:15px;stroke:#fff;}
+
+/* Small badge pills, e.g. "NEW" / "POPULAR" next to nav + card labels */
+.badge{
   display:inline-block;
-  position:relative;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:0.02em;
+  padding:2px 6px;
+  border-radius:20px;
+  margin-left:7px;
+  vertical-align:2px;
+  line-height:1.4;
 }
-.brand .mark::after{
-  content:"";
-  position:absolute;inset:6px;
-  border:2px solid #fff;
-  border-radius:3px;
-}
+.badge.new{background:var(--green-tint);color:var(--green);}
+.badge.popular{background:var(--blue-tint);color:var(--blue);}
 .main-nav{
   display:flex;
   align-items:center;
@@ -143,10 +158,10 @@ header.site-header{
 }
 .mega-group-label .ic{
   width:16px;height:16px;
-  border:1.6px solid var(--ink-soft);
-  border-radius:3px;
-  display:inline-block;
+  display:inline-flex;
+  color:var(--ink-soft);
 }
+.mega-group-label .ic svg{width:16px;height:16px;}
 .mega a{
   display:block;
   padding:9px 12px;
@@ -222,6 +237,22 @@ footer.site-footer{
   max-width:560px;
 }
 
+/* One orchestrated entrance on load — headline, then copy, then the
+   dropzone — rather than scattered scroll-triggered reveals. */
+@keyframes rise-in{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.hero h1, .hero p.lead, .hero .dropzone{
+  animation:rise-in .55s cubic-bezier(.2,.7,.3,1) both;
+}
+.hero h1{animation-delay:0s;}
+.hero p.lead{animation-delay:.08s;}
+.hero .dropzone{animation-delay:.16s;}
+@media (prefers-reduced-motion:reduce){
+  .hero h1, .hero p.lead, .hero .dropzone{animation:none;}
+}
+
 /* Dropzone — the hero visual, since the product itself is the story */
 .dropzone{
   border:1.6px dashed #C4CEEC;
@@ -234,7 +265,9 @@ footer.site-footer{
 .dropzone.drag{
   border-color:var(--blue);
   background:#E4EBFF;
+  transform:scale(1.008);
 }
+.dropzone{transition:border-color .15s ease, background .15s ease, transform .15s ease;}
 .dropzone .dz-icon{
   width:52px;height:52px;
   margin:0 auto 16px;
@@ -242,7 +275,10 @@ footer.site-footer{
   background:var(--white);
   border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;
+  transition:transform .2s ease;
 }
+.dropzone:hover .dz-icon{transform:translateY(-2px);}
+.dropzone.drag .dz-icon{transform:scale(1.1);}
 .dropzone .dz-icon svg{width:24px;height:24px;stroke:var(--blue);}
 .dropzone h3{margin-bottom:4px;}
 .dropzone .dz-sub{font-size:13.5px;color:var(--ink-faint);margin-bottom:18px;}
@@ -257,16 +293,46 @@ footer.site-footer{
   border-radius:7px;
   font-size:14.5px;
   font-weight:500;
+  transition:background .15s ease, transform .12s ease, box-shadow .15s ease;
 }
-.btn:hover{background:var(--blue-hover);}
+.btn:hover{background:var(--blue-hover);transform:translateY(-1px);box-shadow:0 6px 14px rgba(37,84,240,.22);}
+.btn:active{transform:translateY(0);}
 .btn.secondary{
   background:var(--white);
   color:var(--ink);
   border:1px solid var(--border);
+  box-shadow:none;
 }
-.btn.secondary:hover{border-color:var(--blue);color:var(--blue);}
-.btn[disabled]{opacity:.5;cursor:not-allowed;}
+.btn.secondary:hover{border-color:var(--blue);color:var(--blue);background:var(--white);}
+.btn[disabled]{opacity:.6;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
 input[type="file"]{display:none;}
+
+/* Spinner shown inside a button while a conversion is running */
+.spinner{
+  width:14px;height:14px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;
+  animation:spin .7s linear infinite;
+  display:inline-block;
+}
+.spinner.on-light{
+  border-color:rgba(37,84,240,.18);
+  border-top-color:var(--blue);
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion:reduce){
+  .spinner{animation-duration:1.4s;}
+}
+
+.convert-status{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-top:14px;
+  font-size:13.5px;
+  color:var(--ink-soft);
+}
 
 /* ============================================
    Steps
@@ -318,27 +384,78 @@ input[type="file"]{display:none;}
   grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
   gap:16px;
 }
+
+/* Category filter pills (tools.html) */
+.filter-pills{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:22px 0 8px;
+}
+.pill{
+  border:1px solid var(--border);
+  background:var(--white);
+  color:var(--ink-soft);
+  padding:9px 16px;
+  border-radius:999px;
+  font-size:13.5px;
+  font-weight:500;
+  transition:background .15s ease, color .15s ease, border-color .15s ease, transform .12s ease;
+}
+.pill:hover{border-color:var(--blue);color:var(--blue);}
+.pill.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
+.pill:active{transform:scale(.97);}
+
+.filter-section{
+  transition:opacity .2s ease;
+}
+.filter-section.fading{opacity:0;}
+.filter-section[hidden]{display:none;}
 .tool-card{
   border:1px solid var(--border);
-  border-radius:10px;
+  border-radius:12px;
   padding:18px;
   display:flex;
-  gap:12px;
+  gap:14px;
   align-items:flex-start;
+  position:relative;
+  background:var(--white);
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
-.tool-card:hover{border-color:var(--blue);}
+.tool-card:hover{
+  border-color:transparent;
+  transform:translateY(-3px);
+  box-shadow:0 10px 24px rgba(16,24,40,.08);
+}
 .tool-card .tc-ic{
-  width:36px;height:36px;
-  border-radius:8px;
-  background:var(--blue-tint);
-  color:var(--blue);
+  width:40px;height:40px;
+  border-radius:9px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
-  font-size:14px;
-  font-weight:600;
+  transition:transform .16s ease;
 }
-.tool-card h3{margin-bottom:2px;font-size:15px;}
+.tool-card:hover .tc-ic{transform:scale(1.07);}
+.tool-card .tc-ic svg{width:20px;height:20px;}
+.tool-card.c-convert .tc-ic{background:var(--blue-tint);color:var(--blue);}
+.tool-card.c-compress .tc-ic{background:var(--green-tint);color:var(--green);}
+
+.tool-card .tc-body{flex:1;min-width:0;}
+.tool-card h3{
+  margin-bottom:2px;font-size:15px;
+  display:flex;align-items:center;
+}
 .tool-card p{margin:0;font-size:13px;color:var(--ink-faint);}
+
+.tc-arrow{
+  position:absolute;
+  top:18px;right:16px;
+  width:16px;height:16px;
+  color:var(--ink-faint);
+  opacity:0;
+  transform:translateX(-4px);
+  transition:opacity .16s ease, transform .16s ease, color .16s ease;
+}
+.tool-card:hover .tc-arrow{opacity:1;transform:translateX(0);color:var(--blue);}
 
 /* ============================================
    Tool page (single converter)
@@ -395,8 +512,15 @@ select{
   border-radius:10px;
   padding:18px;
   display:none;
+  opacity:0;
+  transform:translateY(6px) scale(.98);
+  transition:opacity .25s ease, transform .25s ease;
 }
 .result-box.show{display:block;}
+.result-box.show.in{opacity:1;transform:translateY(0) scale(1);}
+@media (prefers-reduced-motion:reduce){
+  .result-box{transition:none;}
+}
 .result-row{
   display:flex;
   align-items:center;
