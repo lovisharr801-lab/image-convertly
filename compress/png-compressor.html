@@ -125,6 +125,7 @@
   <div class="faq-item"><h3>Is my image uploaded anywhere?</h3><p>No, compression happens locally in your browser.</p></div>
 </section>
 
+<script src="../js/vendor/pako.min.js"></script>
 <footer class="site-footer">
   <div class="footer-grid">
     <div>
@@ -184,14 +185,15 @@
     runBtn.innerHTML = '<span class="spinner"></span> Compressing…';
     result.classList.remove("show", "in");
     try {
-      const blob = await convertImageFile(currentFile, "image/png", q);
+      const blob = await compressPngLossy(currentFile, Number(qualitySlider.value));
       const outName = swapExtension(currentFile.name, "png");
       document.getElementById("result-name").textContent = outName;
       const before = currentFile.size;
       const after = blob.size;
       const pct = before > 0 ? Math.max(0, Math.round((1 - after / before) * 100)) : 0;
-      document.getElementById("result-stats").innerHTML =
-        `${formatBytes(before)} → ${formatBytes(after)} <span class="saved">(${pct}% smaller)</span>`;
+      document.getElementById("result-stats").innerHTML = after >= before
+        ? `${formatBytes(before)} — already well-optimized, no smaller version found at this quality`
+        : `${formatBytes(before)} → ${formatBytes(after)} <span class="saved">(${pct}% smaller)</span>`;
       const dl = document.getElementById("download-btn");
       dl.href = URL.createObjectURL(blob);
       dl.download = outName;

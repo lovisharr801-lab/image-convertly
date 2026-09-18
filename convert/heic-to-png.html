@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HEIC to PNG Converter — Free, Works in Browser | Convertly</title>
-<meta name="description" content="Convert iPhone HEIC photos to PNG for free, directly in your browser.">
+<title>HEIC to PNG Converter — Free, Works in Every Browser | Convertly</title>
+<meta name="description" content="Convert iPhone HEIC photos to PNG for free, directly in your browser — works in Chrome, Firefox and Edge, not just Safari.">
 <link rel="canonical" href="https://convertly.example.com/convert/heic-to-png.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "HEIC to PNG Converter",
-  "description": "Convert iPhone HEIC photos to PNG for free, directly in your browser.",
+  "description": "Convert iPhone HEIC photos to PNG for free, directly in your browser — works in Chrome, Firefox and Edge, not just Safari.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Any (runs in browser)",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
@@ -26,6 +26,7 @@
 <body>
 <div class="accent-bar"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.3/heic2any.min.js"></script>
 <header class="site-header">
   <div class="nav-row">
     <a href="../" class="brand"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></span>Convertly</a>
@@ -86,11 +87,11 @@
       <h3>Drop your HEIC file here</h3>
       <p class="dz-sub">or click to browse</p>
       <button class="btn" type="button">Choose file</button>
-      <input type="file" id="file-input" accept=".heic,image/heic">
+      <input type="file" id="file-input" accept=".heic,.heif,image/heic,image/heif">
     </div>
 
     <div class="convert-status" id="status" style="display:none;">
-      <span class="spinner on-light"></span> Converting…
+      <span class="spinner on-light"></span> <span id="status-text">Loading HEIC decoder…</span>
     </div>
 
     <div class="result-box" id="result">
@@ -103,21 +104,21 @@
       </div>
     </div>
 
-    <p class="note">Your file is converted locally in your browser. It is never uploaded anywhere.</p>
+    <p class="note">Your file is converted locally in your browser using a WebAssembly HEIC decoder. It is never uploaded anywhere — the first conversion on a page load may take a few seconds while that decoder loads.</p>
   </div>
 </section>
 
 <section class="wrap about-copy">
   <h2>About this converter</h2>
-  <p>Turn HEIC photos from an iPhone into lossless PNG files. Because the conversion happens with your browser's built-in image engine, there's no queue, no file-size limit tied to a server, and no copy of your file kept anywhere once you close the tab.</p>
+  <p>Turn HEIC photos from an iPhone into lossless PNG files. Chrome, Firefox and Edge have no built-in way to read HEIC files — only Safari does — so this page loads a small HEIC decoder (libheif, compiled to WebAssembly) to do the decoding locally, entirely on your device.</p>
 </section>
 
 <section class="wrap faq">
   <h2>Frequently asked questions</h2>
   <div class="faq-item"><h3>When should I use PNG instead of JPG?</h3><p>Choose PNG when you need a lossless copy, or when the image will be edited further and you want to avoid compounding compression artifacts.</p></div>
-  <div class="faq-item"><h3>Does this work on all browsers?</h3><p>HEIC decoding support varies by browser. If a file won't load, try Safari, or export as JPG/PNG from your iPhone's share sheet first.</p></div>
+  <div class="faq-item"><h3>Why does this take longer than your other converters?</h3><p>Chrome, Firefox and Edge have no built-in HEIC decoder, so this page loads a small WebAssembly decoder (libheif) the first time you use it. After that it's fast.</p></div>
   <div class="faq-item"><h3>Will the file be larger than the original HEIC?</h3><p>Usually yes — PNG is lossless and typically produces larger files than HEIC's efficient compression.</p></div>
-  <div class="faq-item"><h3>Is my photo uploaded anywhere?</h3><p>No, everything happens locally in your browser.</p></div>
+  <div class="faq-item"><h3>Is my photo uploaded anywhere?</h3><p>No, everything happens locally in your browser, including the HEIC decoding itself.</p></div>
 </section>
 
 <footer class="site-footer">
@@ -156,13 +157,24 @@
   const input = document.getElementById("file-input");
   const result = document.getElementById("result");
   const status = document.getElementById("status");
+  const statusText = document.getElementById("status-text");
 
   setupDropzone(dz, input, async (files) => {
     const file = files[0];
     result.classList.remove("show", "in");
+    statusText.textContent = "Converting…";
     status.style.display = "flex";
     try {
-      const blob = await convertImageFile(file, "image/png");
+      if (typeof heic2any === "undefined") {
+        throw new Error("The HEIC decoder couldn't load. Check your connection and try again.");
+      }
+      const converted = await heic2any({
+        blob: file,
+        toType: "image/png",
+        });
+      // A HEIC file can contain multiple images (e.g. burst shots);
+      // heic2any returns an array in that case, so always take the first.
+      const blob = Array.isArray(converted) ? converted[0] : converted;
       const outName = swapExtension(file.name, "png");
       document.getElementById("result-name").textContent = outName;
       document.getElementById("result-stats").innerHTML =
@@ -173,7 +185,7 @@
       result.classList.add("show");
       requestAnimationFrame(() => result.classList.add("in"));
     } catch (err) {
-      alert(err.message);
+      alert(err.message || "This file couldn't be converted. Some HEIC variants aren't supported.");
     } finally {
       status.style.display = "none";
     }

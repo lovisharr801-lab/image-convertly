@@ -145,6 +145,209 @@ async function convertImageToIco(file, sizes = [16, 32, 48, 64]) {
   return new Blob([out], { type: "image/x-icon" });
 }
 
+// ---------------------------------------------------------------
+// Real PNG compression via palette quantization (median-cut) + pako
+// deflate. Plain canvas.toBlob('image/png') can't shrink an already-
+// optimized PNG — it just re-encodes as raw 32-bit RGBA, which often
+// makes files *bigger*. This builds an actual indexed-color PNG,
+// which is how real PNG compressors (TinyPNG etc.) get real savings.
+// ---------------------------------------------------------------
+
+const _crc32Table = (() => {
+  const table = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    table[n] = c >>> 0;
+  }
+  return table;
+})();
+
+function _crc32(bytes) {
+  let c = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) c = _crc32Table[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+function _pngChunk(type, data) {
+  const typeBytes = new Uint8Array(4);
+  for (let i = 0; i < 4; i++) typeBytes[i] = type.charCodeAt(i);
+  const body = new Uint8Array(typeBytes.length + data.length);
+  body.set(typeBytes, 0);
+  body.set(data, 4);
+  const crc = _crc32(body);
+
+  const chunk = new Uint8Array(4 + body.length + 4);
+  const view = new DataView(chunk.buffer);
+  view.setUint32(0, data.length, false);
+  chunk.set(body, 4);
+  view.setUint32(4 + body.length, crc, false);
+  return chunk;
+}
+
+// Median-cut quantizer: reduces a set of weighted RGBA colors to at
+// most `maxColors` representative colors.
+function _medianCutPalette(uniqueColors, maxColors) {
+  // Each entry: [r, g, b, a, count]
+  let boxes = [uniqueColors];
+
+  function boxRangeChannel(box) {
+    let ranges = [0, 0, 0, 0];
+    for (let ch = 0; ch < 4; ch++) {
+      let lo = 255, hi = 0;
+      for (const c of box) { if (c[ch] < lo) lo = c[ch]; if (c[ch] > hi) hi = c[ch]; }
+      ranges[ch] = hi - lo;
+    }
+    let best = 0;
+    for (let ch = 1; ch < 4; ch++) if (ranges[ch] > ranges[best]) best = ch;
+    return { channel: best, range: ranges[best] };
+  }
+
+  while (boxes.length < maxColors) {
+    // Pick the box with the largest population that can still be split.
+    let splitIdx = -1, splitScore = -1, splitInfo = null;
+    for (let i = 0; i < boxes.length; i++) {
+      if (boxes[i].length < 2) continue;
+      const info = boxRangeChannel(boxes[i]);
+      let population = 0;
+      for (const c of boxes[i]) population += c[4];
+      const score = info.range * population;
+      if (score > splitScore) { splitScore = score; splitIdx = i; splitInfo = info; }
+    }
+    if (splitIdx === -1) break;
+
+    const box = boxes[splitIdx];
+    const ch = splitInfo.channel;
+    box.sort((a, b) => a[ch] - b[ch]);
+    let total = 0;
+    for (const c of box) total += c[4];
+    let acc = 0, mid = 0;
+    for (; mid < box.length; mid++) { acc += box[mid][4]; if (acc >= total / 2) break; }
+    mid = Math.max(1, Math.min(box.length - 1, mid));
+    const boxA = box.slice(0, mid), boxB = box.slice(mid);
+    boxes.splice(splitIdx, 1, boxA, boxB);
+  }
+
+  return boxes.map((box) => {
+    let r = 0, g = 0, b = 0, a = 0, count = 0;
+    for (const c of box) { r += c[0] * c[4]; g += c[1] * c[4]; b += c[2] * c[4]; a += c[3] * c[4]; count += c[4]; }
+    return [Math.round(r / count), Math.round(g / count), Math.round(b / count), Math.round(a / count)];
+  });
+}
+
+async function compressPngLossy(file, qualityPercent) {
+  if (typeof pako === "undefined") {
+    throw new Error("PNG compression engine failed to load. Please refresh and try again.");
+  }
+
+  const img = await new Promise((resolve, reject) => {
+    const im = new Image();
+    const url = URL.createObjectURL(file);
+    im.onload = () => resolve(im);
+    im.onerror = () => reject(new Error("This browser couldn't read that file."));
+    im.src = url;
+  });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const { width, height } = canvas;
+  const pixels = ctx.getImageData(0, 0, width, height).data;
+
+  // quality 95 -> up to 256 colors (near-lossless); quality 10 -> 8 colors
+  const maxColors = Math.max(8, Math.round(8 + (qualityPercent / 100) * 248));
+
+  // Build a histogram of unique colors.
+  const histogram = new Map();
+  const pixelCount = width * height;
+  for (let i = 0; i < pixelCount; i++) {
+    const o = i * 4;
+    const key = (pixels[o] << 24) | (pixels[o + 1] << 16) | (pixels[o + 2] << 8) | pixels[o + 3];
+    histogram.set(key, (histogram.get(key) || 0) + 1);
+  }
+
+  const uniqueColors = [];
+  for (const [key, count] of histogram) {
+    uniqueColors.push([(key >>> 24) & 255, (key >>> 16) & 255, (key >>> 8) & 255, key & 255, count]);
+  }
+
+  const palette = uniqueColors.length <= maxColors
+    ? uniqueColors.map((c) => [c[0], c[1], c[2], c[3]])
+    : _medianCutPalette(uniqueColors, maxColors);
+
+  // Map every unique color to its nearest palette index (computed once
+  // per unique color, not per pixel).
+  const colorToIndex = new Map();
+  for (const [key] of histogram) {
+    const r = (key >>> 24) & 255, g = (key >>> 16) & 255, b = (key >>> 8) & 255, a = key & 255;
+    let bestIdx = 0, bestDist = Infinity;
+    for (let p = 0; p < palette.length; p++) {
+      const pc = palette[p];
+      const dr = r - pc[0], dg = g - pc[1], db = b - pc[2], da = a - pc[3];
+      const dist = dr * dr + dg * dg + db * db + da * da;
+      if (dist < bestDist) { bestDist = dist; bestIdx = p; }
+    }
+    colorToIndex.set(key, bestIdx);
+  }
+
+  const indices = new Uint8Array(pixelCount);
+  for (let i = 0; i < pixelCount; i++) {
+    const o = i * 4;
+    const key = (pixels[o] << 24) | (pixels[o + 1] << 16) | (pixels[o + 2] << 8) | pixels[o + 3];
+    indices[i] = colorToIndex.get(key);
+  }
+
+  // Build the raw scanline data: one filter-type byte (0 = None) per
+  // row, followed by one palette-index byte per pixel.
+  const bpl = width;
+  const raw = new Uint8Array((bpl + 1) * height);
+  for (let y = 0; y < height; y++) {
+    raw[y * (bpl + 1)] = 0;
+    raw.set(indices.subarray(y * width, (y + 1) * width), y * (bpl + 1) + 1);
+  }
+
+  const compressed = pako.deflate(raw, { level: 9 });
+
+  const ihdr = new Uint8Array(13);
+  const ihdrView = new DataView(ihdr.buffer);
+  ihdrView.setUint32(0, width, false);
+  ihdrView.setUint32(4, height, false);
+  ihdr[8] = 8;   // bit depth
+  ihdr[9] = 3;   // color type: palette
+  ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
+
+  const plte = new Uint8Array(palette.length * 3);
+  const needsAlpha = palette.some((c) => c[3] !== 255);
+  const trns = needsAlpha ? new Uint8Array(palette.length) : null;
+  palette.forEach((c, i) => {
+    plte[i * 3] = c[0]; plte[i * 3 + 1] = c[1]; plte[i * 3 + 2] = c[2];
+    if (trns) trns[i] = c[3];
+  });
+
+  const signature = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
+  const chunks = [
+    signature,
+    _pngChunk("IHDR", ihdr),
+    _pngChunk("PLTE", plte),
+  ];
+  if (trns) chunks.push(_pngChunk("tRNS", trns));
+  chunks.push(_pngChunk("IDAT", compressed));
+  chunks.push(_pngChunk("IEND", new Uint8Array(0)));
+
+  const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
+  const out = new Uint8Array(totalLen);
+  let offset = 0;
+  for (const c of chunks) { out.set(c, offset); offset += c.length; }
+
+  const resultBlob = new Blob([out], { type: "image/png" });
+
+  // Safety net: never hand back something bigger than the original.
+  if (resultBlob.size >= file.size) return file;
+  return resultBlob;
+}
+
 // Wires drag-and-drop + click-to-browse behavior onto a dropzone element.
 function setupDropzone(dropzoneEl, inputEl, onFiles) {
   const openPicker = () => inputEl.click();
