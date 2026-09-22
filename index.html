@@ -88,8 +88,17 @@
   </div>
 
   <div class="wrap">
-    <div class="convert-status" id="hero-status" style="display:none;">
-      <span class="spinner on-light"></span> Converting…
+    <div class="options-col" id="hero-options" style="display:none;">
+      <label class="format-label">Convert to</label>
+      <div class="format-grid" id="hero-format-grid">
+        <button type="button" class="format-btn" data-format="png">PNG</button>
+        <button type="button" class="format-btn" data-format="jpg">JPG</button>
+        <button type="button" class="format-btn" data-format="webp">WEBP</button>
+        <button type="button" class="format-btn" data-format="bmp">BMP</button>
+        <button type="button" class="format-btn" data-format="ico">ICO</button>
+        <button type="button" class="format-btn" data-format="svg">SVG</button>
+      </div>
+      <button class="btn run-btn-wide" id="hero-run-btn" type="button" disabled>Choose a format above</button>
     </div>
     <div class="result-box" id="hero-result">
       <div class="result-row">
@@ -97,7 +106,7 @@
           <h3 id="hero-result-name">—</h3>
           <div class="result-stats" id="hero-result-stats"></div>
         </div>
-        <a class="btn" id="hero-download" href="#" download>Download PNG</a>
+        <a class="btn" id="hero-download" href="#" download>Download</a>
       </div>
     </div>
   </div>
@@ -273,33 +282,74 @@
 <script src="js/tools.js"></script>
 
 <script>
+  const heroOptions = document.getElementById("hero-options");
   const heroResult = document.getElementById("hero-result");
-  const heroStatus = document.getElementById("hero-status");
+  const heroRunBtn = document.getElementById("hero-run-btn");
+  const heroFormatButtons = document.querySelectorAll("#hero-format-grid .format-btn");
+  let heroFile = null;
+  let heroFormat = null;
+
   setupDropzone(
     document.getElementById("hero-dropzone"),
     document.getElementById("hero-input"),
-    async (files) => {
-      const file = files[0];
+    (files) => {
+      heroFile = files[0];
+      heroFormat = null;
+      heroOptions.style.display = "block";
       heroResult.classList.remove("show", "in");
-      heroStatus.style.display = "flex";
-      try {
-        const blob = await convertImageFile(file, "image/png");
-        const outName = swapExtension(file.name, "png");
-        document.getElementById("hero-result-name").textContent = outName;
-        document.getElementById("hero-result-stats").innerHTML =
-          `${formatBytes(file.size)} → ${formatBytes(blob.size)}`;
-        const dl = document.getElementById("hero-download");
-        dl.href = URL.createObjectURL(blob);
-        dl.download = outName;
-        heroResult.classList.add("show");
-        requestAnimationFrame(() => heroResult.classList.add("in"));
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        heroStatus.style.display = "none";
-      }
+      heroFormatButtons.forEach((b) => b.classList.remove("active"));
+      heroRunBtn.disabled = true;
+      heroRunBtn.textContent = "Choose a format above";
+      heroOptions.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   );
+
+  heroFormatButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      heroFormat = btn.dataset.format;
+      heroFormatButtons.forEach((b) => b.classList.toggle("active", b === btn));
+      heroRunBtn.disabled = false;
+      heroRunBtn.textContent = `Convert to ${heroFormat.toUpperCase()}`;
+    });
+  });
+
+  // Dispatches to the right converter for the chosen target format.
+  async function heroConvertToFormat(file, format) {
+    switch (format) {
+      case "png": return { blob: await convertImageFile(file, "image/png"), ext: "png" };
+      case "jpg": return { blob: await convertImageFile(file, "image/jpeg"), ext: "jpg" };
+      case "webp": return { blob: await convertImageFile(file, "image/webp"), ext: "webp" };
+      case "bmp": return { blob: await convertImageToBmp(file), ext: "bmp" };
+      case "ico": return { blob: await convertImageToIco(file), ext: "ico" };
+      case "svg": return { blob: await convertImageToSvgWrapper(file), ext: "svg" };
+      default: throw new Error("Unknown target format.");
+    }
+  }
+
+  heroRunBtn.addEventListener("click", async () => {
+    if (!heroFile || !heroFormat) return;
+    const originalLabel = heroRunBtn.textContent;
+    heroRunBtn.disabled = true;
+    heroRunBtn.innerHTML = '<span class="spinner"></span> Converting…';
+    heroResult.classList.remove("show", "in");
+    try {
+      const { blob, ext } = await heroConvertToFormat(heroFile, heroFormat);
+      const outName = swapExtension(heroFile.name, ext);
+      document.getElementById("hero-result-name").textContent = outName;
+      document.getElementById("hero-result-stats").innerHTML =
+        `${formatBytes(heroFile.size)} → ${formatBytes(blob.size)}`;
+      const dl = document.getElementById("hero-download");
+      dl.href = URL.createObjectURL(blob);
+      dl.download = outName;
+      heroResult.classList.add("show");
+      requestAnimationFrame(() => heroResult.classList.add("in"));
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      heroRunBtn.disabled = false;
+      heroRunBtn.textContent = originalLabel;
+    }
+  });
 </script>
 </body>
 </html>
