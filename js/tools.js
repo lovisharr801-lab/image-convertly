@@ -145,6 +145,69 @@ async function convertImageToIco(file, sizes = [16, 32, 48, 64]) {
   return new Blob([out], { type: "image/x-icon" });
 }
 
+// Browsers have no native BMP encoder either, so this builds a real
+// uncompressed 32-bit BMP by hand: a BITMAPFILEHEADER + BITMAPINFOHEADER
+// (BITMAPV4HEADER-style, with alpha) followed by raw BGRA pixel rows,
+// bottom-to-top, each padded to a 4-byte boundary as the format requires.
+async function convertImageToBmp(file) {
+  const img = await new Promise((resolve, reject) => {
+    const im = new Image();
+    const url = URL.createObjectURL(file);
+    im.onload = () => resolve(im);
+    im.onerror = () => reject(new Error("This browser couldn't read that file."));
+    im.src = url;
+  });
+
+  const width = img.naturalWidth;
+  const height = img.naturalHeight;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  const pixels = ctx.getImageData(0, 0, width, height).data;
+
+  const headerSize = 14 + 40; // file header + BITMAPINFOHEADER
+  const pixelDataSize = width * height * 4;
+  const fileSize = headerSize + pixelDataSize;
+
+  const out = new Uint8Array(fileSize);
+  const view = new DataView(out.buffer);
+
+  // BITMAPFILEHEADER
+  out[0] = 0x42; out[1] = 0x4d; // "BM"
+  view.setUint32(2, fileSize, true);
+  view.setUint32(6, 0, true); // reserved
+  view.setUint32(10, headerSize, true); // pixel data offset
+
+  // BITMAPINFOHEADER
+  view.setUint32(14, 40, true);        // header size
+  view.setInt32(18, width, true);
+  view.setInt32(22, height, true);     // positive = bottom-up row order
+  view.setUint16(26, 1, true);         // planes
+  view.setUint16(28, 32, true);        // bits per pixel (with alpha)
+  view.setUint32(30, 0, true);         // BI_RGB, no compression
+  view.setUint32(34, pixelDataSize, true);
+  view.setInt32(38, 2835, true);       // ~72 DPI
+  view.setInt32(42, 2835, true);
+  view.setUint32(46, 0, true);         // colors used
+  view.setUint32(50, 0, true);         // important colors
+
+  // Pixel data: BGRA, rows bottom-to-top (BMP's native order).
+  let offset = headerSize;
+  for (let y = height - 1; y >= 0; y--) {
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      out[offset++] = pixels[i + 2]; // B
+      out[offset++] = pixels[i + 1]; // G
+      out[offset++] = pixels[i];     // R
+      out[offset++] = pixels[i + 3]; // A
+    }
+  }
+
+  return new Blob([out], { type: "image/bmp" });
+}
+
 // ---------------------------------------------------------------
 // Real PNG compression via palette quantization (median-cut) + pako
 // deflate. Plain canvas.toBlob('image/png') can't shrink an already-

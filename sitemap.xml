@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://convertly.example.com/</loc></url>
-  <url><loc>https://convertly.example.com/tools.html</loc></url>
   <url><loc>https://convertly.example.com/convert/image-converter.html</loc></url>
   <url><loc>https://convertly.example.com/convert/webp-to-png.html</loc></url>
   <url><loc>https://convertly.example.com/convert/png-to-jpg.html</loc></url>

@@ -61,8 +61,8 @@
       <div class="nav-item">
         <button class="nav-trigger" aria-controls="mega-tools">Tools <span class="chev"></span></button>
         <div class="mega" id="mega-tools">
-          <a href="../tools.html">All tools</a>
-          <a href="../tools.html#image">Image tools</a>
+          <a href="../index.html#tools">All tools</a>
+          <a href="../index.html#tools">Image tools</a>
         </div>
       </div>
     </nav>
@@ -71,9 +71,9 @@
 
 <section class="tool-page-head">
   <div class="wrap">
-    <div class="crumb"><a href="../">Home</a> / <a href="../tools.html">Convert</a> / Image Converter</div>
+    <div class="crumb"><a href="../">Home</a> / <a href="../index.html#tools">Convert</a> / Image Converter</div>
     <h1>Image Converter</h1>
-    <p>Upload any common image and convert it to JPG, PNG or WEBP.</p>
+    <p>Upload any common image and convert it to PNG, JPG, WEBP, BMP, ICO or SVG.</p>
   </div>
 </section>
 
@@ -89,14 +89,17 @@
       <input type="file" id="file-input" accept="image/*">
     </div>
 
-    <div class="options-row" id="options" style="display:none;">
-      <label for="target-format">Convert to</label>
-      <select id="target-format">
-        <option value="image/png|png">PNG</option>
-        <option value="image/jpeg|jpg">JPG</option>
-        <option value="image/webp|webp">WEBP</option>
-      </select>
-      <button class="btn" id="run-btn" type="button">Convert</button>
+    <div class="options-col" id="options" style="display:none;">
+      <label class="format-label">Convert to</label>
+      <div class="format-grid" id="format-grid">
+        <button type="button" class="format-btn" data-format="png">PNG</button>
+        <button type="button" class="format-btn" data-format="jpg">JPG</button>
+        <button type="button" class="format-btn" data-format="webp">WEBP</button>
+        <button type="button" class="format-btn" data-format="bmp">BMP</button>
+        <button type="button" class="format-btn" data-format="ico">ICO</button>
+        <button type="button" class="format-btn" data-format="svg">SVG</button>
+      </div>
+      <button class="btn run-btn-wide" id="run-btn" type="button" disabled>Choose a format above</button>
     </div>
 
     <div class="result-box" id="result">
@@ -115,7 +118,7 @@
 
 <section class="wrap about-copy">
   <h2>About this converter</h2>
-  <p>Upload any common image and convert it to JPG, PNG or WEBP. Pick any target format above — the conversion runs instantly using your browser's own image engine, so nothing is ever sent to a server.</p>
+  <p>Upload any common image and convert it to PNG, JPG, WEBP, BMP, ICO or SVG. Click a target format above — the conversion runs instantly using your browser's own image engine, so nothing is ever sent to a server. Formats like PSD, EPS or TIFF aren't offered here, since a browser can't decode or produce those correctly on its own — everything you see is a format this tool can genuinely convert.</p>
 </section>
 
 <section class="wrap faq">
@@ -149,7 +152,7 @@
     </div>
     <div>
       <h4>Site</h4>
-      <a href="../tools.html">All tools</a>
+      <a href="../index.html#tools">All tools</a>
     </div>
   </div>
   <div class="footer-bottom">© 2026 Convertly. Files are processed locally in your browser and are never uploaded.</div>
@@ -162,24 +165,53 @@
   const input = document.getElementById("file-input");
   const options = document.getElementById("options");
   const result = document.getElementById("result");
+  const runBtn = document.getElementById("run-btn");
+  const formatButtons = document.querySelectorAll(".format-btn");
   let currentFile = null;
+  let selectedFormat = null;
 
   setupDropzone(dz, input, (files) => {
     currentFile = files[0];
-    options.style.display = "flex";
+    options.style.display = "block";
     result.classList.remove("show");
+    selectedFormat = null;
+    formatButtons.forEach((b) => b.classList.remove("active"));
+    runBtn.disabled = true;
+    runBtn.textContent = "Choose a format above";
   });
 
-  const runBtn = document.getElementById("run-btn");
+  formatButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectedFormat = btn.dataset.format;
+      formatButtons.forEach((b) => b.classList.toggle("active", b === btn));
+      runBtn.disabled = false;
+      runBtn.textContent = `Convert to ${selectedFormat.toUpperCase()}`;
+    });
+  });
+
+  // Dispatches to the right converter for the chosen target format.
+  // PNG/JPG/WEBP go through the shared Canvas re-encoder; BMP, ICO and
+  // SVG each need their own encoder since Canvas can't export them.
+  async function convertToFormat(file, format) {
+    switch (format) {
+      case "png": return { blob: await convertImageFile(file, "image/png"), ext: "png" };
+      case "jpg": return { blob: await convertImageFile(file, "image/jpeg"), ext: "jpg" };
+      case "webp": return { blob: await convertImageFile(file, "image/webp"), ext: "webp" };
+      case "bmp": return { blob: await convertImageToBmp(file), ext: "bmp" };
+      case "ico": return { blob: await convertImageToIco(file), ext: "ico" };
+      case "svg": return { blob: await convertImageToSvgWrapper(file), ext: "svg" };
+      default: throw new Error("Unknown target format.");
+    }
+  }
+
   runBtn.addEventListener("click", async () => {
-    if (!currentFile) return;
-    const [mime, ext] = document.getElementById("target-format").value.split("|");
+    if (!currentFile || !selectedFormat) return;
     const originalLabel = runBtn.textContent;
     runBtn.disabled = true;
     runBtn.innerHTML = '<span class="spinner"></span> Converting…';
     result.classList.remove("show", "in");
     try {
-      const blob = await convertImageFile(currentFile, mime);
+      const { blob, ext } = await convertToFormat(currentFile, selectedFormat);
       const outName = swapExtension(currentFile.name, ext);
       document.getElementById("result-name").textContent = outName;
       document.getElementById("result-stats").innerHTML =

@@ -61,8 +61,8 @@
       <div class="nav-item">
         <button class="nav-trigger" aria-controls="mega-tools">Tools <span class="chev"></span></button>
         <div class="mega" id="mega-tools">
-          <a href="tools.html">All tools</a>
-          <a href="tools.html#image">Image tools</a>
+          <a href="#tools">All tools</a>
+          <a href="#tools">Image tools</a>
         </div>
       </div>
     </nav>
@@ -126,29 +126,88 @@
   </div>
 </section>
 
-<section class="tool-section" id="image">
+<section class="tool-section" id="tools">
   <div class="tool-section-inner">
-    <div class="section-head">
-      <h2>Convert</h2>
-      <a href="tools.html">View all tools</a>
+    <div class="wrap" style="padding:0;">
+      <div class="section-head" style="justify-content:center;flex-direction:column;gap:4px;text-align:center;">
+        <h2>All tools</h2>
+        <p style="margin:0;color:var(--ink-faint);font-size:14.5px;">Every conversion and compression tool on Convertly, in one place.</p>
+      </div>
+      <div class="tool-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" class="tool-search" id="tool-search" placeholder="Search tools by name…" aria-label="Search tools by name">
+      </div>
+      <div class="filter-pills">
+        <button class="pill active" data-filter="all">All tools</button>
+        <button class="pill" data-filter="convert">Convert</button>
+        <button class="pill" data-filter="compress">Compress</button>
+      </div>
     </div>
+<section class="tool-section filter-section" id="image" data-category="convert">
+  <div class="tool-section-inner">
+    <div class="section-head"><h2>Convert</h2></div>
     <div class="tool-grid">
-      <a class="tool-card c-convert" href="convert/image-converter.html">
+      <a class="tool-card c-convert" href="convert/image-converter.html" data-name="image converter">
         <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
         <div class="tc-body"><h3>Image Converter <span class="badge popular">Popular</span></h3><p>Convert between any common image format.</p></div>
         <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="tool-card c-convert" href="convert/png-to-jpg.html">
+      <a class="tool-card c-convert" href="convert/png-to-jpg.html" data-name="png to jpg">
         <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
         <div class="tc-body"><h3>PNG to JPG <span class="badge new">New</span></h3><p>Smaller files, works everywhere.</p></div>
         <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="tool-card c-convert" href="convert/webp-to-png.html">
+      <a class="tool-card c-convert" href="convert/jpg-to-webp.html" data-name="jpg to webp">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
+        <div class="tc-body"><h3>JPG to WEBP <span class="badge new">New</span></h3><p>Shrink photos for faster websites.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/png-to-webp.html" data-name="png to webp">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
+        <div class="tc-body"><h3>PNG to WEBP <span class="badge new">New</span></h3><p>Smaller files, transparency kept.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/webp-to-png.html" data-name="webp to png">
         <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
         <div class="tc-body"><h3>WEBP to PNG</h3><p>Get a lossless PNG from a WEBP file.</p></div>
         <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="tool-card c-convert" href="convert/png-to-ico.html">
+      <a class="tool-card c-convert" href="convert/webp-to-jpg.html" data-name="webp to jpg">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
+        <div class="tc-body"><h3>WEBP to JPG</h3><p>Widely-compatible JPG from WEBP.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/jfif-to-png.html" data-name="jfif to png">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
+        <div class="tc-body"><h3>JFIF to PNG</h3><p>Standard PNG from a JFIF file.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/heic-to-jpg.html" data-name="heic to jpg">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
+        <div class="tc-body"><h3>HEIC to JPG</h3><p>Open iPhone photos anywhere.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/heic-to-png.html" data-name="heic to png">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3"/><path d="M20 17H7l3 3"/></svg></div>
+        <div class="tc-body"><h3>HEIC to PNG</h3><p>Lossless PNG from an iPhone photo.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/png-to-svg.html" data-name="png to svg">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M5 17C5 10 10 5 17 5"/></svg></div>
+        <div class="tc-body"><h3>PNG to SVG</h3><p>Wrap a PNG in a scalable SVG container.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/svg-to-png.html" data-name="svg to png">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M5 17C5 10 10 5 17 5"/></svg></div>
+        <div class="tc-body"><h3>SVG to PNG <span class="badge new">New</span></h3><p>Rasterize an SVG to a standard PNG.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/svg-converter.html" data-name="svg converter">
+        <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M5 17C5 10 10 5 17 5"/></svg></div>
+        <div class="tc-body"><h3>SVG Converter</h3><p>Wrap any image in an SVG container.</p></div>
+        <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="tool-card c-convert" href="convert/png-to-ico.html" data-name="png to ico">
         <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 12h6M12 9v6"/></svg></div>
         <div class="tc-body"><h3>PNG to ICO <span class="badge new">New</span></h3><p>Multi-size favicon from a PNG.</p></div>
         <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
@@ -156,30 +215,29 @@
     </div>
   </div>
 </section>
-
-<section class="tool-section">
+<section class="tool-section filter-section" data-category="compress">
   <div class="tool-section-inner">
-    <div class="section-head">
-      <h2>Compress</h2>
-      <a href="tools.html">View all tools</a>
-    </div>
+    <div class="section-head"><h2>Compress</h2></div>
     <div class="tool-grid">
-      <a class="tool-card c-compress" href="compress/image-compressor.html">
+      <a class="tool-card c-compress" href="compress/image-compressor.html" data-name="image compressor">
         <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></div>
         <div class="tc-body"><h3>Image Compressor</h3><p>Shrink any image with a quality slider.</p></div>
         <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="tool-card c-compress" href="compress/jpeg-compressor.html">
+      <a class="tool-card c-compress" href="compress/jpeg-compressor.html" data-name="jpeg compressor">
         <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></div>
         <div class="tc-body"><h3>JPEG Compressor</h3><p>Reduce JPEG size for web and email.</p></div>
         <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
-      <a class="tool-card c-compress" href="compress/png-compressor.html">
+      <a class="tool-card c-compress" href="compress/png-compressor.html" data-name="png compressor">
         <div class="tc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></div>
         <div class="tc-body"><h3>PNG Compressor</h3><p>Cut PNG size, keep transparency.</p></div>
         <span class="tc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
     </div>
+  </div>
+</section>
+    <p class="no-results" id="no-results">No tools match your search.</p>
   </div>
 </section>
 
@@ -206,7 +264,7 @@
     </div>
     <div>
       <h4>Site</h4>
-      <a href="tools.html">All tools</a>
+      <a href="#tools">All tools</a>
     </div>
   </div>
   <div class="footer-bottom">© 2026 Convertly. Files are processed locally in your browser and are never uploaded.</div>
