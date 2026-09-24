@@ -616,6 +616,22 @@ select{
 
 .about-copy{padding:8px 0 24px;font-size:15px;}
 
+.file-chip{
+  display:none;
+  align-items:center;
+  gap:10px;
+  margin:16px 0 0;
+  padding:10px 14px;
+  background:var(--blue-tint);
+  border:1px solid var(--blue-tint-solid);
+  border-radius:8px;
+  font-size:13.5px;
+  color:var(--ink);
+}
+.file-chip.show{display:flex;}
+.file-chip svg{width:16px;height:16px;color:var(--blue);flex-shrink:0;}
+.file-chip .file-chip-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
 .note{
   font-size:13px;
   color:var(--ink-faint);

@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="../favicon.ico">
 <title>Image Compressor — Shrink File Size Free | Convertly</title>
 <meta name="description" content="Compress any image and shrink its file size for free, right in your browser with an adjustable quality slider.">
 <link rel="canonical" href="https://convertly.example.com/compress/image-compressor.html">
@@ -89,6 +91,11 @@
       <input type="file" id="file-input" accept="image/*">
     </div>
 
+    <div class="file-chip" id="file-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      <span class="file-chip-name" id="file-chip-name"></span>
+    </div>
+
     <div class="options-row" id="options" style="display:none;">
       <label for="quality">Quality</label>
       <div class="range-wrap">
@@ -171,6 +178,8 @@
 
   setupDropzone(dz, input, (files) => {
     currentFile = files[0];
+    document.getElementById("file-chip-name").textContent = currentFile.name;
+    document.getElementById("file-chip").classList.add("show");
     options.style.display = "flex";
     result.classList.remove("show");
   });

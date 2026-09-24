@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.ico">
 <title>Free Online File Converter &amp; Compressor — Convertly</title>
 <meta name="description" content="Convert and compress images for free, right in your browser. No uploads, no installs, no watermarks — WEBP, PNG, JPG, HEIC, SVG, ICO and more.">
 <link rel="canonical" href="https://convertly.example.com/">
@@ -84,6 +86,10 @@
       <p class="dz-sub">or click to browse — JPG, PNG, WEBP, GIF, BMP</p>
       <button class="btn" type="button">Choose file</button>
       <input type="file" id="hero-input" accept="image/*">
+    </div>
+    <div class="file-chip" id="hero-file-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      <span class="file-chip-name" id="hero-file-chip-name"></span>
     </div>
   </div>
 
@@ -295,6 +301,8 @@
     (files) => {
       heroFile = files[0];
       heroFormat = null;
+      document.getElementById("hero-file-chip-name").textContent = heroFile.name;
+      document.getElementById("hero-file-chip").classList.add("show");
       heroOptions.style.display = "block";
       heroResult.classList.remove("show", "in");
       heroFormatButtons.forEach((b) => b.classList.remove("active"));
@@ -336,8 +344,6 @@
       const { blob, ext } = await heroConvertToFormat(heroFile, heroFormat);
       const outName = swapExtension(heroFile.name, ext);
       document.getElementById("hero-result-name").textContent = outName;
-      document.getElementById("hero-result-stats").innerHTML =
-        `${formatBytes(heroFile.size)} → ${formatBytes(blob.size)}`;
       const dl = document.getElementById("hero-download");
       dl.href = URL.createObjectURL(blob);
       dl.download = outName;

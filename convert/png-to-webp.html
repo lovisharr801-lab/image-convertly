@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="../favicon.ico">
 <title>PNG to WEBP Converter — Free & Instant | Convertly</title>
 <meta name="description" content="Convert PNG images to WEBP for free, right in your browser, while keeping transparency.">
 <link rel="canonical" href="https://convertly.example.com/convert/png-to-webp.html">
@@ -89,6 +91,11 @@
       <input type="file" id="file-input" accept="image/png">
     </div>
 
+    <div class="file-chip" id="file-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      <span class="file-chip-name" id="file-chip-name"></span>
+    </div>
+
     <div class="convert-status" id="status" style="display:none;">
       <span class="spinner on-light"></span> Converting…
     </div>
@@ -159,14 +166,14 @@
 
   setupDropzone(dz, input, async (files) => {
     const file = files[0];
+    document.getElementById("file-chip-name").textContent = file.name;
+    document.getElementById("file-chip").classList.add("show");
     result.classList.remove("show", "in");
     status.style.display = "flex";
     try {
       const blob = await convertImageFile(file, "image/webp", 0.9);
       const outName = swapExtension(file.name, "webp");
       document.getElementById("result-name").textContent = outName;
-      document.getElementById("result-stats").innerHTML =
-        `${formatBytes(file.size)} → ${formatBytes(blob.size)}`;
       const dl = document.getElementById("download-btn");
       dl.href = URL.createObjectURL(blob);
       dl.download = outName;
